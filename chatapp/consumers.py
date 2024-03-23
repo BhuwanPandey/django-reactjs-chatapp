@@ -111,11 +111,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 chat_message = await self.save(chat_obj, message)
 
             elif message_type == "typing":
-                content["user_id"] = self.user.id
+                content["username"] = self.user.username
                 chat_id = content["chat_id"]
                 chat_message = content
 
-        
         await self.channel_layer.group_send(
             self.chatroom,
             {

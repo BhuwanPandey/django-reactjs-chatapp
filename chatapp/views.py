@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from rest_framework import viewsets, permissions,status
-from chatapp.serializers import ChatSerializer, ChatMessageSerializer, MessageSerializer, CheckSerializer
+from chatapp.serializers import ChatSerializer, ChatMessageSerializer, MessageSerializer, CheckSerializer, ChatCommonSerializer
 from chatapp.models import Chat, ChatMessage, ChatUser
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -35,11 +34,6 @@ class ChatViewset(viewsets.ModelViewSet):
             last_date = Subquery(last_messages.values("created_at")[:1])
         ).order_by("-last_date")
     
-    def get_object(self):
-        id = self.kwargs["uuid"]
-        queryset = self.get_queryset()
-        user = get_object_or_404(queryset,public_id=id)
-        return user
 
     def create(self,request):
         try:
@@ -76,7 +70,7 @@ class ChatViewset(viewsets.ModelViewSet):
                 chatuser = ChatUser.objects.create(
                     user = owner, chat_id = chat_obj, is_initiator=True
                 )
-                chatUser.objects.create(
+                ChatUser.objects.create(
                     user = otheruser, chat_id = chat_obj
                 )
             else:
@@ -119,7 +113,7 @@ class ChatViewset(viewsets.ModelViewSet):
         )
         if chat_qs.exists() and chat_qs[0].chat_user.count() > 1:
             chat_obj = chat_qs.first()
-            serializer = ChatSerializer(chat_obj, context={"request":request}).data
+            serializer = ChatCommonSerializer(chat_obj, context={"request":request}).data
             res_status = status.HTTP_200_OK
         else:
             serializer = {}

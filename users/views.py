@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 import django_filters
 
+
 class UserDetailsView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserDetailsSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -55,3 +56,13 @@ class UserDetailView(RetrieveAPIView):
         id = self.kwargs["uuid"]
         user = get_object_or_404(self.queryset,public_id=id)
         return user
+
+class UserView(UserDetailView):
+    serializer_class = UserDetailsSerializer
+    queryset = UserModel.objects.all()
+
+    def get_object(self):
+        name = self.kwargs["username"]
+        user = get_object_or_404(self.queryset,username=name)
+        return user
+
