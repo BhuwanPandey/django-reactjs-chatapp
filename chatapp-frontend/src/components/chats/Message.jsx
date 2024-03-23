@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
-
+import { format } from "timeago.js";
 
 function Message(props) {
-  const { user } = useContext(AuthContext);
-  const BE = "http://127.0.0.1:8000"
+  const { user, baseUrl: BE } = useContext(AuthContext);
   const ref = useRef();
 
   useEffect(() => {
@@ -13,21 +11,29 @@ function Message(props) {
   }, [props.message]);
 
   return (
-    <div ref={ref} className={`chatMessage ${props.message.user_details.username === user.username && "owner"}`} >
+    <div
+      ref={ref}
+      className={`chatMessage ${
+        props.message.user_details.username === user.username && "owner"
+      }`}
+    >
       <div className="chatMessageInfo">
-        <img src={
-          props.message.user_details.avatar ?
-          BE+ props.message.user_details.avatar:
-          `https://i.pravatar.cc/300?img=1`
-          } alt={props.message.user_details.username+"_image"} />
-        <span>just now</span>
+        <img
+          src={
+            props.message.user_details.avatar
+              ? BE + props.message.user_details.avatar
+              : `https://i.pravatar.cc/300?img=${props.message.user_details.username.length}`
+          }
+          alt={props.message.user_details.username + "_image"}
+        />
+        <span>{format(props.message.created_at)}</span>
       </div>
       <div className="chatMessageContent">
         <p>{props.message.message}</p>
-        {/* <img src="https://images.pexels.com/photos/675920/pexels-photo-675920.jpeg?cs=srgb&dl=pexels-min-an-675920.jpg&fm=jpg" alt="" /> */}
       </div>
     </div>
-  )
+    
+  );
 }
 
-export default Message
+export default Message;

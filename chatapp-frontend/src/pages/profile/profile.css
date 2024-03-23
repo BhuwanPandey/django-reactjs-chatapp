@@ -1,0 +1,87 @@
+
+.profilePage{
+    display: flex;
+    height: calc( 100vh - 50px);
+    align-items: center;
+    justify-content: center;
+}
+
+.profiledashboard{
+    display: flex;
+    height:400px;
+    width:600px;
+    box-shadow: 1px 1px 5px 1px lightgray;
+    border:1px solid;
+    border-radius: 10px;
+}
+.profiledetail{
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    padding-left: 25px;
+    justify-content: center;
+}
+
+.imageContainer{
+    width:200px;
+}
+
+.userimage{
+    height: 200px;
+    border-radius: 5px;
+}
+.profiledetail span{
+    margin:4px 0;
+    font-size: 15px;
+}
+.profiledetail .username{
+    margin:0 5px;
+}
+
+.formdetail{
+    flex:3;
+    margin:3px 0;
+
+}
+.updateBox{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 250px;
+    padding: 10px;
+    margin-top: 20px;
+}
+.updateInput{
+    font-size: 20px;
+    padding:10px 2px;
+    margin:10px 0; 
+}
+.btnDiv{
+    margin: auto;
+}
+.updateBtn{
+    height: 50px;
+    border-radius: 10px;
+    border: none;
+    background-color: #142338;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.chatBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: -webkit-fill-available;
+}
+.innerChatBtn{
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    background: royalblue;
+    font-weight: 500;
+    font-size: 15px;
+}

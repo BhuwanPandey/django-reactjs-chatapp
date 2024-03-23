@@ -6,17 +6,16 @@ function Navbar() {
 
   if (!user) {
     return <div>Loading...</div>;
-}
+  }
   return (
-    <div className='chatNavbar'>
+    <div className="chatNavbar">
       <span className="chatLogo">Messenger</span>
       <div className="chatUser">
         <img src="" alt="" />
-        <span>{user.username[0].toUpperCase()+ user.username.slice(1)}</span>
-        {/* <button onClick={()=>signOut(auth)}>logout</button> */}
+        <span>{user.username[0].toUpperCase() + user.username.slice(1)}</span>
       </div>
     </div>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;
