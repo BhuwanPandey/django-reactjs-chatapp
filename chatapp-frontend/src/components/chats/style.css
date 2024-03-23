@@ -8,11 +8,11 @@
 }
 .chatContainer{
     border: 1px solid white;
-      border-radius: 10px;
-      width: 65%;
-      height: 80%;
-      display: flex;
-      overflow: hidden;
+    border-radius: 10px;
+    width: 65%;
+    height: 80%;
+    display: flex;
+    overflow: hidden;
 }
 .sidebar {
     flex:1;
@@ -58,6 +58,9 @@ gap: 10px;
 .chatSearchForm input::placeholder{
     color: lightgray;
 }
+.chatUser1.selected{
+    background: #2f2d52;
+}
 
 .chatUser1{
     padding: 10px;
@@ -66,8 +69,9 @@ gap: 10px;
     gap: 10px;
     color: white;
     cursor: pointer;
+    border-top: 1px solid #767676
 }
-.chatUser1::hove{
+.chatUser1:hover{
     background-color: #2f2d52;
 
 }
@@ -99,7 +103,7 @@ gap: 10px;
 .chatMessages{
     background-color: #ddddf7;
     padding: 10px;
-    height: calc(100% - 150px);
+    height: calc(100% - 170px);
     overflow-y: scroll;
 }
 .chatWelcomeMessage{
@@ -156,16 +160,18 @@ gap: 10px;
     color: white;
     border-radius: 10px 0px 10px 10px;
 }
-.chatInput{
-    height: 40px;
+.chatInputBase{
+    height: 60px;
     background-color: #ddddf7;
     padding: 10px;
+    
+}
+.chatInput{
     display: flex;
-    align-items: center;
     justify-content: space-between;
 }
 .chatInput input{
-    width: 100%;
+    width: 80%;
     border: none;
     outline: none;
     color: #2f2d52;
@@ -173,6 +179,7 @@ gap: 10px;
     border-radius: 10px;
     line-height: 20px;
     padding-left: 8px;
+    margin: 0 auto;
 }
 .chatInput input::placeholder{
     color: lightgray;
@@ -180,20 +187,9 @@ gap: 10px;
     padding-left: 5px;
 }
 
-.chatSend{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.chatSend img{
-    height: 24px;
-    cursor: pointer;
-}
-
 .chatSend button{
     border: none;
-    padding: 10px 15px;
+    padding: 15px;
     color: white;
     background-color: #8da4f1;
     cursor: pointer;
@@ -206,3 +202,12 @@ gap: 10px;
     cursor: not-allowed;
     border-radius: 10px;
 }
+
+.typerMsg{
+    margin-left: 30px;
+    height: 20px;
+}
+
+
+
+

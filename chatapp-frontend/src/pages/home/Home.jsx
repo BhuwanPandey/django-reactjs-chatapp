@@ -1,4 +1,4 @@
-import Containers from "../../components/Containers";
+import Containers from "../../components/containers/Containers";
 import Topbar from "../../components/topbar/Topbar";
 import "./home.css"
 

@@ -1,35 +1,29 @@
 import {
     createContext,
-    useContext,
     useReducer,
     useEffect,
     useState
   } from "react";
-import axios from "axios";
 
 const INITIAL_STATE = {
   token:JSON.parse(localStorage.getItem("token")) || null,
   messages:[],
   chat: {},
   chat_name:null,
-  isfirst:false,
-  send:false
+  isfirst:false
 };
+
 
 
 export const ChatContext = createContext();
 
 const chatReducer = (state, action) => {
-  // console.log(action.payload)
-  console.log("switch")
-  console.log(action.payload)
   switch (action.type) {
     case "CHANGE_USER":
       return {
         chat: action.payload.chat_detail,
         chat_name:null,
         isfirst:false,
-        // token:action.payload.token,
         messages:action.payload.messages,
         send:false
       };
@@ -45,20 +39,12 @@ const chatReducer = (state, action) => {
           isfirst:action.payload.isfirst,
           send:false
         };
-        case "MSG_SEND":
-          return {
-            chat:action.payload.data,
-            isfirst:action.payload.isfirst,
-            messages:action.payload.messages,
-            send:true
-          }
     default:
       return state;
   }
 };
 
 export const ChatContextProvider = ({ children }) => {
-  // const [chats,setChats] = useState();
   const [socke,setSoc] = useState();
   const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
 
@@ -72,7 +58,6 @@ export const ChatContextProvider = ({ children }) => {
         socketconnection()
       }
     },[state.token])
-   
     return (
       <ChatContext.Provider value={{ 
         data:state.chat,
@@ -87,29 +72,3 @@ export const ChatContextProvider = ({ children }) => {
     );
   };
 
-
-// export const Inputtrigger = createContext();
-
-
-// const triggerReducer = (state, action) => {
-//   switch (action.type) {
-//     case "MSG_SEND":
-//       return {
-//         send:true
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
-// export const InputtriggerContext = ({ children }) => {
-//   const [state, dispatch] = useReducer(triggerReducer, INITIAL_STATE);
-
-//     return (
-//       <ChatContext.Provider value={{ 
-//         send : state.send,
-//         dispatch }}>
-//         {children}
-//       </ChatContext.Provider>
-//     );
-//   };

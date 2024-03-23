@@ -3,7 +3,9 @@ import AuthReducer from "./AuthReducer";
 import axios from "axios";
 
 const INITIAL_STATE = {
+  baseUrl:"http://127.0.0.1:8000",
   token:JSON.parse(localStorage.getItem("token")) || null,
+  users:[],
   isFetching: false,
   error: false,
 };
@@ -13,7 +15,7 @@ export const AuthContext = createContext(INITIAL_STATE);
 export const AuthContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
   const [user,setUser] = useState();
-  const url = "http://127.0.0.1:8000/auth/user/"
+  const url = `${state.baseUrl}/auth/user/`
 
   useEffect(()=>{
     localStorage.setItem("token", JSON.stringify(state.token));
@@ -37,8 +39,10 @@ export const AuthContextProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
+      baseUrl:state.baseUrl,
       user: user,
+      users:state.users,
       token:state.token,
       isFetching: state.isFetching,
       error: state.error,
@@ -48,5 +52,3 @@ export const AuthContextProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-
