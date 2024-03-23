@@ -136,3 +136,30 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+
+
+# ignore for frontend project
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+chatapp-frontend/node_modules
+chatapp-frontend/.pnp
+chatapp-frontend/.pnp.js
+
+# # testing
+chatapp-frontend/coverage
+
+# # production
+chatapp-frontend/build
+
+# # misc
+chatapp-frontend/.DS_Store
+chatapp-frontend/.env.local
+chatapp-frontend/.env.development.local
+chatapp-frontend/.env.test.local
+chatapp-frontend/.env.production.local
+
+chatapp-frontend/npm-debug.log*
+chatapp-frontend/yarn-debug.log*
+chatapp-frontend/yarn-error.log*
