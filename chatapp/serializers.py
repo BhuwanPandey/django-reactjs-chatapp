@@ -7,7 +7,8 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username","avatar"]
+        fields = ["id","username","avatar"]
+
 
 
 class ChatCommonSerializer(serializers.Serializer):
@@ -27,13 +28,16 @@ class ChatCommonSerializer(serializers.Serializer):
             user_qs = obj.chat_user.all().exclude(user=request.user)
             user = user_qs.first().user
             display_name = user.username.capitalize()
+            display_name_id = user.id
             if user.avatar.name:
                 profile_image =  user.avatar.url
         except AttributeError:
             display_name = None
+            display_name_id=0
             profile_image = None
 
         representation['display_name'] = display_name
+        representation['display_name_id'] = display_name_id
         representation['chat_profile'] = profile_image
         return representation
 
@@ -54,12 +58,14 @@ class ChatSerializer(ChatCommonSerializer):
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     message_id = serializers.IntegerField(source="id",read_only=True)
+    chat_id = serializers.UUIDField(source="user.chat_id.public_id",read_only=True)
     user_details = UserSerializer(source="user.user")
 
     class Meta:
         model = ChatMessage
         fields = [
             "message_id",
+            "chat_id",
             "message",
             "user_details",
             "read",

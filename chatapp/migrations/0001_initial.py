@@ -34,8 +34,6 @@ class Migration(migrations.Migration):
             name='ChatUser',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_initiator', models.BooleanField()),
-                ('is_admin', models.BooleanField()),
                 ('chat_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='chat_user', to='chatapp.chat')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

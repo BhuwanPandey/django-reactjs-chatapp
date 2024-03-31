@@ -15,10 +15,8 @@ class Chat(AbstractModel):
 
 
 class ChatUser(models.Model):
-    is_initiator = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     chat_id = models.ForeignKey(Chat, related_name="chat_user", on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.user} chat"

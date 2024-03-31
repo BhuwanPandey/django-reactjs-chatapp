@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -86,18 +87,33 @@ TEMPLATES = [
 ASGI_APPLICATION = "chats.asgi.application"
 # WSGI_APPLICATION = 'chats.wsgi.application'
 
+REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
+FRONT_API_1 = os.getenv('FRONT_API_1', 'http://localhost:3000')
+FRONT_API_2 = os.getenv('FRONT_API_2', 'http://127.0.0.1:3000')
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [f"redis://{REDIS_HOST}:6379/1"],
         },
     },
 }
 
+# caching setup
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    FRONT_API_1,
+    FRONT_API_2,
 ]
 
 # Database
@@ -171,7 +187,6 @@ AUTH_USER_MODEL = "users.UserModel"
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-# ACCOUNT_LOGOUT_ON_GET = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

@@ -1,9 +1,9 @@
-from django.db.models import F,Q
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from chatapp.serializers import ChatMessageSerializer
 from chatapp.models import Chat, ChatMessage,ChatUser
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 
 User = get_user_model()
 
@@ -12,7 +12,23 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chat_id = []
+        self.online_user = []
         self.user = None
+
+    async def add_online_user(self):
+        # adding on cache
+        username = self.user.username
+        key = f"user_:{username}"
+        has_key = cache.get(key)
+        if not has_key:
+            cache.set(key,username)
+        
+        name = "user_:*"
+        all_keys = cache.keys(name)
+        
+        for key in all_keys:
+            _,username = key.split(":")
+            self.online_user.append(username)
 
     def get_chat_id(self, user):
         chat_queryset = Chat.objects.filter(chat_user__user=user).values_list(
@@ -20,6 +36,22 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
         return list(chat_queryset)
     
+    async def send_online_users(self):
+        chatMessage = {
+            'type': "userjoined",
+            'message': {
+                'type': 'onlineUser',
+                'onlineuser': self.online_user
+            }
+        }
+        await self.channel_layer.group_send("OnlineUser",chatMessage)
+    
+    async def delete_online_user(self):
+        username = self.user.username
+        key = f"user_:{username}"
+        cache.delete(key)
+        self.online_user.remove(username)
+
     async def connect(self):
         self.user = self.scope["user"]
         if self.user is None or self.user.is_anonymous:
@@ -33,13 +65,22 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 self.chatroom,
                 self.channel_name
             )
+        # online user handling
+        await self.channel_layer.group_add(
+            "OnlineUser",
+            self.channel_name
+        )
         await self.accept()
+        await self.add_online_user()
+        await self.send_online_users()
         await self.send_json({
             "message":f"{self.user.username} is connected !"
         })
 
     async def disconnect(self,code):
         if not self.user.is_anonymous:
+            await self.delete_online_user()
+            await self.send_online_users()
             for chatid in self.chat_id:
                 self.chatroom = str(chatid)
                 await self.channel_layer.group_discard(
@@ -53,7 +94,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         chat_obj,_ = Chat.objects.get_or_create(
                 name = name
             )
-        c1 = ChatUser(user=self.user,chat_id=chat_obj,is_initiator=True)
+        c1 = ChatUser(user=self.user,chat_id=chat_obj)
         u = User.objects.get(username=username)
         c2 = ChatUser(user=u,chat_id=chat_obj)
         ChatUser.objects.bulk_create([c1,c2])
@@ -127,3 +168,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         message = event['message']
         await self.send_json(message)
 
+    async def userjoined(self, event):
+        message = event['message']
+        await self.send_json(message)
