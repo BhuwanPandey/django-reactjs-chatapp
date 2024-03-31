@@ -42,7 +42,7 @@ function Containers() {
                 <Grid item xs={12} ms={4} sm={4} key={idx}>
                   <Cards
                     user={result}
-                    online={onlineuser.includes(result.username)}
+                    online={onlineuser.includes(result.username.toLowerCase())}
                   />
                 </Grid>
               ))

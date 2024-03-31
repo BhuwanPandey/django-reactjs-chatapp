@@ -17,7 +17,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def add_online_user(self):
         # adding on cache
-        username = self.user.username
+        username = self.user.username.lower()
         key = f"user_:{username}"
         has_key = cache.get(key)
         if not has_key:
@@ -47,7 +47,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_send("OnlineUser",chatMessage)
     
     async def delete_online_user(self):
-        username = self.user.username
+        username = self.user.username.lower()
         key = f"user_:{username}"
         cache.delete(key)
         self.online_user.remove(username)

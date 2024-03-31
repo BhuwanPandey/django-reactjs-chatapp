@@ -1,6 +1,9 @@
+#root{
+  background-color: #a7bcff;
+  height: 100vh;
+}
 .homeContainer{
     width:100%;
-    height: calc(100vh - 50px);
     background-color: #a7bcff;
   }
 

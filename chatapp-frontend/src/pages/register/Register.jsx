@@ -12,7 +12,7 @@ export default function Register() {
 
 
   const handleClick = async (e) => {
-    const newUrl = `${process.env.REACT_APP_API_URL}/auth/registration/`;
+    const registerUrl = `${process.env.REACT_APP_BACKEND_API}/auth/registration/`;
     setError(null);
     const password_ = password.current.value;
     const passwordAgain_ = passwordAgain.current.value;
@@ -28,7 +28,7 @@ export default function Register() {
         password2: passwordAgain_,
       };
       try {
-        await axios.post(newUrl, user, {
+        await axios.post(registerUrl, user, {
           headers: {
             "content-type": "application/json",
           },
@@ -36,7 +36,7 @@ export default function Register() {
         navigate("/login");
       } catch (err) {
         if(err.response.status === 400){
-          setError("User already Exists")
+          setError("Bad Requests")
         }
         if(err.response.status === 500){
           setError("Something Went Wrong!")

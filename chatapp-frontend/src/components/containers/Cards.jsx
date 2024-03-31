@@ -11,11 +11,10 @@ export default function Cards(props) {
   const onlineStatus = props.online;
 
   const username = user.username[0].toUpperCase() + user.username.slice(1);
-
   return (
     <>
       <Card
-        sx={{ maxWidth: 300 }}
+        sx={{ maxWidth: 250 }}
         style={{
           padding: "10px",
           marginBottom: "20px",
@@ -57,7 +56,7 @@ export default function Cards(props) {
         <CardActions>
           <Link to={`/profile/${user.username}`}>
             <Button size="small" variant="contained">
-              View Profile
+              Profile
             </Button>
           </Link>
           <Link to={`/chat/user/${user.public_id}`}>
