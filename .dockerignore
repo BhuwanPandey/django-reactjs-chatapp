@@ -1,0 +1,5 @@
+env/
+media/
+chatapp-frontend/
+db.*
+.gitignore
