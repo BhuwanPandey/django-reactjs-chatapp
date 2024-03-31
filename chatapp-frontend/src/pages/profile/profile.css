@@ -28,6 +28,7 @@
 
 .userimage{
     height: 200px;
+    width: 200px;
     border-radius: 5px;
 }
 .profiledetail span{
@@ -54,7 +55,10 @@
 .updateInput{
     font-size: 20px;
     padding:10px 2px;
-    margin:10px 0; 
+    margin:10px 0;
+}
+.updateBox textarea{
+    resize: none;
 }
 .btnDiv{
     margin: auto;

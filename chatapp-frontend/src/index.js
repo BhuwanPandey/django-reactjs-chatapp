@@ -9,13 +9,13 @@ import {InputContextProvider} from "./context/InputContext";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthContextProvider>
       <ChatContextProvider>
-        <InputContextProvider>
+        <AuthContextProvider>
+          <InputContextProvider>
             <App />
-        </InputContextProvider>
+          </InputContextProvider>
+        </AuthContextProvider>
       </ChatContextProvider>
-    </AuthContextProvider>
   </React.StrictMode>
 );
 

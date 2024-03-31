@@ -1,74 +1,86 @@
-import {
-    createContext,
-    useReducer,
-    useEffect,
-    useState
-  } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 
 const INITIAL_STATE = {
-  token:JSON.parse(localStorage.getItem("token")) || null,
-  messages:[],
+  token: JSON.parse(localStorage.getItem("token")) || null,
+  messages: [],
   chat: {},
-  chat_name:null,
-  isfirst:false
+  chat_name: null,
+  isfirst: false,
+  onlineUsers: null,
 };
 
-
-
-export const ChatContext = createContext();
+export const ChatContext = createContext(INITIAL_STATE);
 
 const chatReducer = (state, action) => {
   switch (action.type) {
     case "CHANGE_USER":
       return {
+        ...state,
         chat: action.payload.chat_detail,
-        chat_name:null,
-        isfirst:false,
-        messages:action.payload.messages,
-        send:false
+        chat_name: null,
+        isfirst: false,
+        messages: action.payload.messages,
       };
-      case "SEARCH_USER":
-        return {
-          chat:{
-            display_name:action.payload.display_name,
-            chat_id:action.payload.chat_id
-          },
-          chat_name:action.payload.chat_name,
-          // token:action.payload.token,
-          messages:[],
-          isfirst:action.payload.isfirst,
-          send:false
-        };
+    case "SEARCH_USER":
+      return {
+        ...state,
+        chat: {
+          display_name: action.payload.display_name,
+          chat_id: action.payload.chat_id,
+        },
+        chat_name: action.payload.chat_name,
+        messages: [],
+        isfirst: action.payload.isfirst,
+      };
+    case "Online_USER":
+      return {
+        ...state,
+        onlineUsers: action.onlineusers,
+      };
+    case "SET_SOCKET":
+      return {
+        ...state,
+        socket: action.socket,
+      };
+    case "SELECT_DIV":
+      return {
+        ...state,
+        divSelected: action.divSelected.name,
+      };
     default:
       return state;
   }
 };
 
 export const ChatContextProvider = ({ children }) => {
-  const [socke,setSoc] = useState();
+  const [online, setOnlineUser] = useState(null);
   const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
 
-    useEffect(()=>{
-      
-      const socketconnection = () =>{
-      const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${state.token.key}`);
-      setSoc(socket)
-      }
-      if (state.token){
-        socketconnection()
-      }
-    },[state.token])
-    return (
-      <ChatContext.Provider value={{ 
-        data:state.chat,
-        chat_name:state.chat_name,
-        messages:state.messages,
-        isfirst:state.isfirst,
-        socket:socke,
-        send:state.send,
-        dispatch }}>
-        {children}
-      </ChatContext.Provider>
-    );
-  };
-
+  useEffect(() => {
+    if (state.socket) {
+      state.socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === "onlineUser") {
+          setOnlineUser(message.onlineuser);
+        }
+      };
+    }
+  }, [state.socket]);
+  return (
+    <ChatContext.Provider
+      value={{
+        chat_record: state.chat,
+        chat_name: state.chat_name,
+        messages: state.messages,
+        firstConnection: state.isfirst,
+        socket: state.socket,
+        send: state.send,
+        onlineUsers: online,
+        divSelected: state.divSelected,
+        dispatch,
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
+};

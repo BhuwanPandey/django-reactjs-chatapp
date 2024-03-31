@@ -1,25 +1,41 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 import { InputContext } from "../../context/InputContext";
 import Typewriter from 'typewriter-effect';
 import {commonAction} from "../../common/sendaction";
+import InputEmoji from "react-input-emoji";
+
 
 function Input() {
   const [text, setText] = useState("");
-  const { data, isfirst, socket, dispatch, messages, chat_name } =
+  const { chat_record, firstConnection, socket, dispatch, messages, chat_name } =
     useContext(ChatContext);
-  const { send, refresh, trigger } = useContext(InputContext);
-  const {user} = useContext(AuthContext);
+  const { refresh, trigger } = useContext(InputContext);
+  const [reconnect,setReconnect] = useState(false);
+  const {user,token} = useContext(AuthContext);
   const [typing,setTyping] = useState(false);
   const [otheruser,setOtherUser] = useState(null);
+  const chat_id = chat_record && chat_record.chat_id;
+  
+  useEffect(()=>{
+    if (socket) {
+      socket.close();
+    }
+    const new_socket = new WebSocket(`${process.env.REACT_APP_CHAT_API}/ws/chat/?token=${token.key}`);
+    dispatch({"type":"SET_SOCKET",socket:new_socket})
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  },[token,reconnect])
 
-
-  if (socket && send) {
-    let datas = data;
+  if (socket) {
+    let datas = chat_record;
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      if(message.type === "typing" && user && message.username !== user.username){
+      if(message.type === "typing" && user && message.username !== user.username && message.chat_id === chat_id){
         setTyping(true)
         setOtherUser(message.username)
         setTimeout(() => {
@@ -27,12 +43,20 @@ function Input() {
         }, 5000); 
       }
       if(message.type === "chat_message"){
-        const new_ = [...messages, message];
-        if (isfirst) {
+        let new_ = [];
+        if (firstConnection) {
           datas = {
             chat_id: message.chat_id,
-            display_name: data.display_name,
+            display_name: chat_record.display_name,
           };
+          new_ = [...messages, message];
+          setReconnect(()=>(!reconnect))
+        }
+        else if(message.chat_id === chat_id){
+          new_ = [...messages, message];
+        }
+        else{
+          new_ = messages
         }
         dispatch({
           type: "CHANGE_USER",
@@ -42,8 +66,10 @@ function Input() {
     };
       }
   }
+
+
   const handleSend = () => {
-    commonAction(text,chat_name,data,isfirst,socket,trigger)
+    commonAction(text,chat_name,chat_record,firstConnection,socket)
     setTyping(false)
     setText("");
   };
@@ -51,18 +77,16 @@ function Input() {
   const handleEnter = (e) => {
     if(socket){
       const notify_typing = () =>{
-        socket.send(JSON.stringify({chat_id:data.chat_id,type:"typing"}))
-        trigger({ type: "SEND_MSG" });
+        socket.send(JSON.stringify({chat_id:chat_record.chat_id,type:"typing"}))
       }
-      !isfirst && notify_typing()
+      !firstConnection && notify_typing()
     }
 
-    if (text.trim().length > 1 && e.code === "Enter") {
-      commonAction(text,chat_name,data,isfirst,socket,trigger)
+  if(text.trim().length > 1 && e.code === "Enter") {
+      commonAction(text,chat_name,chat_record,firstConnection,socket)
       setTyping(false)
       setText("");
     }
-    e.code === "Enter" && setText("");
   };
 
   return (
@@ -80,15 +104,14 @@ function Input() {
       </div>
       
     <div className="chatInput">
-      {(data.chat_id || isfirst) && (
+      {(chat_record.chat_id || firstConnection) && (
         <>
-          <input
-            type="text"
-            placeholder="Type something..."
-            onChange={(e) => setText(e.target.value)}
+            <InputEmoji
             value={text}
+            onChange={setText}
             onKeyDown={handleEnter}
-            
+            maxLength={80}
+            placeholder="Type a message"
           />
           <div className="chatSend">
             <button onClick={handleSend} disabled={text.trim().length < 1}>

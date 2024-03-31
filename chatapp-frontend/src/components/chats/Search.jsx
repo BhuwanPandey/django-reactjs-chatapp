@@ -6,13 +6,15 @@ import { get_message } from "../../common/messages";
 import { useNavigate } from "react-router";
 
 function Search(props) {
+  const { user: currentUser, token, baseUrl } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
   const [username, setUsername] = useState("");
   const [user, setUser] = useState([]);
   const [err, setErr] = useState(false);
   const navigate = useNavigate();
-  const { user: currentUser, token, baseUrl } = useContext(AuthContext);
   const newUrl = `${baseUrl}/auth/users/?username=`;
-  const { dispatch } = useContext(ChatContext);
+  const user_id = props.user_id;
+
 
   const checkchat = async (
     currentuser_id,
@@ -24,8 +26,8 @@ function Search(props) {
       currentuser_id > anotheruser_id
         ? `${currentusername}_${anotherusername}_chat`
         : `${anotherusername}_${currentusername}_chat`;
-
-    const baseUrl1 = `${baseUrl}/auth/chats/check_chat/`;
+    
+    const baseUrl1 = `${baseUrl}/api/chats/check_chat/`;
     const data = { chat_name: chat_name };
     const res = await axios.post(baseUrl1, data, {
       headers: {
@@ -33,15 +35,19 @@ function Search(props) {
         "content-type": "application/json",
       },
     });
-
     if (res.status === 200) {
       const chat_id = res.data.chat_id;
-      const url = `${baseUrl}/auth/chats/${chat_id}/messagecollection/`;
+      const url = `${baseUrl}/api/chats/${chat_id}/messagecollection/`;
       const res1 = await get_message(url, token.key);
+      
       if (res1.status === 200) {
         dispatch({
           type: "CHANGE_USER",
-          payload: { chat_detail: res.data, messages: res1.data },
+          payload: { chat_detail: res.data, messages: res1.data},
+        });
+        dispatch({
+          type: "SELECT_DIV",
+          divSelected:{name:res.data.display_name},
         });
       }
     }
@@ -53,6 +59,10 @@ function Search(props) {
         chat_name: chat_name,
       };
       dispatch({ type: "SEARCH_USER", payload: data });
+      dispatch({
+        type: "SELECT_DIV",
+        divSelected:{name:null},
+      });
     }
   };
 
@@ -71,7 +81,7 @@ function Search(props) {
           }
           checkchat(
             currentUser.public_id,
-            props.user_id,
+            user_id,
             currentUser.username,
             username
           );
@@ -79,10 +89,12 @@ function Search(props) {
 
       } catch (err) {
         navigate("/chat");
+        window.location.reload()
+
       }
     };
-    currentUser && props.user_id && checkuser(props.user_id);
-  }, [currentUser, props.chat_id]);
+    currentUser && user_id && checkuser(user_id);
+  }, [currentUser, user_id]);
 
   const handleSearch = async () => {
     let searchUrl = newUrl + username;
@@ -92,6 +104,7 @@ function Search(props) {
           Authorization: `Token ${token.key}`,
         },
       });
+      
       if (res.status === 200) {
         setUser(res.data);
       }
@@ -138,7 +151,7 @@ function Search(props) {
         user.map((u, idx) => (
           <div className="chatUser1" key={idx} onClick={() => handleClick(u)}>
             <img
-              src={u.avatar || "https://i.pravatar.cc/300?img=1"}
+              src={u.avatar || `https://i.pravatar.cc/300?img=${u.id}`}
               alt="search user"
             />
             <div className="chatuserInfo">

@@ -9,14 +9,16 @@ import axios from "axios";
 
 export default function Topbar() {
   const [show, setShow] = useState(false);
-  const { user, token, baseUrl, dispatch } = useContext(AuthContext);
-  const PE = "http://localhost:3000/";
+  const { baseUrl, user, token, dispatch } = useContext(AuthContext);
   const location = useLocation();
   const [input, setInput] = useState("");
   const url = `${baseUrl}/auth/users/`;
 
-  const ischat = location.pathname.includes("/chat/");
-  const isprofile = location.pathname.includes("/profile/");
+  const ischat =
+    location.pathname.includes("/chat/") || location.pathname.includes("/chat");
+  const isprofile =
+    location.pathname.includes("/profile/") ||
+    location.pathname.includes("/profile");
 
   if (!user) {
     return <div>Loading...</div>;
@@ -33,7 +35,6 @@ export default function Topbar() {
           Authorization: `Token ${token.key}`,
         },
       });
-      console.log(res.data, "search");
       dispatch({ type: "Users", payload: { users: res.data } });
     } catch (err) {
       console.log(err);
@@ -68,9 +69,18 @@ export default function Topbar() {
         )}
       </div>
       <div className="topbarRight">
+        <Link to="/chat" style={{ textDecoration: "none" }}>
+          <span style={{ fontSize: "17px", color: "white", fontWeight: 600 }}>
+            chats
+          </span>
+        </Link>
         <span onClick={toggleDropDown}>
           <img
-            src={user.avatar ? user.avatar : PE + "person/other.jpg"}
+            src={
+              user.avatar
+                ? user.avatar
+                : `https://i.pravatar.cc/300?img=${user.id}`
+            }
             alt=""
             className="topbarImg"
           />

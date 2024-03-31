@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 
 export default function Profile() {
   // const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-  //
   const { user: currentUser, token, baseUrl: url } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const username = useParams().username;
@@ -73,17 +72,25 @@ export default function Profile() {
             <div className="imageContainer">
               <img
                 src={
-                  user.avatar ? user.avatar : "https://i.pravatar.cc/300?img=9"
+                  user.avatar ? user.avatar : `https://i.pravatar.cc/300?img=${user.id}`
                 }
                 alt=""
                 className="userimage"
               />
-              <input
+              {
+                user.username === currentUser.username
+                ?
+                <input
                 type="file"
                 id="file"
                 accept=".png,.jpeg,.jpg"
                 onChange={(e) => setFile(e.target.files[0])}
               />
+                :
+                ''
+              }
+             
+
             </div>
 
             <p style={{ fontSize: "24px", margin: "9px 0" }}>
@@ -132,7 +139,7 @@ export default function Profile() {
               </form>
             ) : (
               <div className="chatBtn">
-                <Link to={`/chat/u/${user.public_id}`} className="innerChatBtn">
+                <Link to={`/chat/user/${user.public_id}`} className="innerChatBtn">
                   Let's Chat
                 </Link>
               </div>

@@ -2,25 +2,25 @@ import axios from "axios";
 import { useRef, useState } from "react";
 import "./register.css";
 import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
 
 export default function Register() {
   const username = useRef();
   const password = useRef();
   const passwordAgain = useRef();
   const navigate = useNavigate();
-  const [passwordmismatch, setPassword] = useState(false);
+  const [error,setError] = useState(null);
+
 
   const handleClick = async (e) => {
-    const newUrl = "http://127.0.0.1:8000/auth/registration/";
-    setPassword(false);
+    const newUrl = `${process.env.REACT_APP_API_URL}/auth/registration/`;
+    setError(null);
     const password_ = password.current.value;
     const passwordAgain_ = passwordAgain.current.value;
 
     e.preventDefault();
 
     if (passwordAgain_ !== password_) {
-      setPassword(true);
+      setError("Password didnot Match!")
     } else {
       const user = {
         username: username.current.value,
@@ -35,7 +35,13 @@ export default function Register() {
         });
         navigate("/login");
       } catch (err) {
-        console.log(err);
+        if(err.response.status === 400){
+          setError("User already Exists")
+        }
+        if(err.response.status === 500){
+          setError("Something Went Wrong!")
+        }
+        
       }
     }
   };
@@ -72,17 +78,15 @@ export default function Register() {
               className="loginInput"
               type="password"
             />
-            {passwordmismatch && (
+            {error && (
               <span style={{ color: "red", textAlign: "center" }}>
-                Password didnot Match
+                {error}
               </span>
             )}
             <button className="loginButton" type="submit">
               Sign Up
             </button>
-            <Link to={`/login/`}>
-              <button className="loginRegisterButton">Log into Account</button>
-            </Link>
+              <button className="loginRegisterButton" onClick={()=>{navigate("/login")}}>Log In</button>
           </form>
         </div>
       </div>

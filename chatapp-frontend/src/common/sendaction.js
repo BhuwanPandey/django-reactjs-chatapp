@@ -1,6 +1,6 @@
 
 
-export const commonAction = (text,chat_name,data,isfirst,socket,trigger) =>{
+export const commonAction = (text,chat_name,data,isfirst,socket) =>{
     const firstconnection = {
         type: "chat_begin",
         message: text,
@@ -15,7 +15,6 @@ export const commonAction = (text,chat_name,data,isfirst,socket,trigger) =>{
     isfirst
     ? socket.send(JSON.stringify(firstconnection))
     : socket.send(JSON.stringify(input));
-    trigger({ type: "SEND_MSG" });
 }
 
 
