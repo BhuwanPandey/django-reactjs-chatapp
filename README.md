@@ -1,16 +1,15 @@
 ## A Simple ChatApp, built with Django and ReactJs.
 
-This is simple chat application which used django channels for realtime connection.
-
+![Screenshot 2024-03-31 135859](https://github.com/BhuwanPandey/chatapp-fullstack/assets/46397975/0afb75c5-9783-4be1-985e-cb154a16894f)
 <div>&nbsp;</div>
 
 Included features:
-- :speech_balloon: chat
-- :red_circle: online/offline friends status
-- :abcd: "Is typing..." indicator
-- :rabbit2: random profile picture generation
-- :man::woman: user update and creation
-- :lock: authentication
+- :speech_balloon: Chat
+- :red_circle: Online/Offline friends status
+- :abcd: "Is typing..." status
+- :rabbit2: Random profile picture generation
+- :man::woman: User Creation and Update
+- :lock: Authentication and Permission
 
 
 Tech Stack:
@@ -30,11 +29,12 @@ Navigate inside project docker folder:
 `cd chatapp-compose `  
 
 Start all services:  
-`docker compose up -d --build` (run this at first time or after making anychanges)
+`docker compose up -d --build` (Run this one time of creation)
 <div>&nbsp;</div>
-Later you can use
+
+Later you can use:
 `docker compose up`
-After all visit at localhost:3000
+After,visit at localhost:3000
 
 
 ### Locally without Docker
@@ -54,6 +54,9 @@ visit at localhost:8000
 Change directory
 cd chat-frontend
 npm install
+create .env add
+REACT_APP_BACKEND_API=
+REACT_APP_CHAT_API=
 npm start
 visit at localhost:3000
 ```
