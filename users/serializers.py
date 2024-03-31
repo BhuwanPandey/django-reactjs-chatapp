@@ -16,10 +16,10 @@ class CustomRegisterSerializer(RegisterSerializer):
     
 
 class UserDetailsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UserModel
         fields = (
+            "id",
             "public_id",
             "username",
             "fullname",
@@ -27,4 +27,4 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             "address",
             "avatar",
         )
-        read_only_fields = ("public_id","username")
+        read_only_fields = ("id","public_id","username")
