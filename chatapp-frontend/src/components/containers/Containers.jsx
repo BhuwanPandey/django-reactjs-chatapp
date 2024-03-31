@@ -1,11 +1,13 @@
 import { useEffect, useContext } from "react";
-import Cards from "./Cards";
 import axios from "axios";
 import { Container, Grid, Typography } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import Cards from "./Cards";
 
 function Containers() {
-  const { users, token, dispatch, baseUrl } = useContext(AuthContext);
+  const { baseUrl, users, token, dispatch } = useContext(AuthContext);
+  const { onlineUsers: onlineuser } = useContext(ChatContext);
   const url = `${baseUrl}/auth/users/`;
 
   useEffect(() => {
@@ -16,7 +18,6 @@ function Containers() {
             Authorization: `Token ${token.key}`,
           },
         });
-        // setUser(res.data);
         dispatch({ type: "Users", payload: { users: res.data } });
       } catch (err) {
         console.log(err);
@@ -28,15 +29,28 @@ function Containers() {
   return (
     <>
       <Container maxWidth="lg">
-        <Typography variant="h4" align="center" style={{ marginTop: "50px" }}>
+        <Typography
+          variant="h4"
+          align="center"
+          style={{ padding: "20px", fontWeight: 700 }}
+        >
           List of Users
         </Typography>
         <Grid container spacing={5} style={{ marginTop: "20px" }}>
-          {users.map((result, idx) => (
-            <Grid item xs={12} ms={4} sm={4} key={idx}>
-              <Cards user={result} />
-            </Grid>
-          ))}
+          {onlineuser
+            ? users.map((result, idx) => (
+                <Grid item xs={12} ms={4} sm={4} key={idx}>
+                  <Cards
+                    user={result}
+                    online={onlineuser.includes(result.username)}
+                  />
+                </Grid>
+              ))
+            : users.map((result, idx) => (
+                <Grid item xs={12} ms={4} sm={4} key={idx}>
+                  <Cards user={result} online={false} />
+                </Grid>
+              ))}
         </Grid>
       </Container>
     </>

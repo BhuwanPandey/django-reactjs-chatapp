@@ -22,7 +22,7 @@ function App() {
           path="/register/"
           element={user ? <Navigate to="/" /> : <Register />}
         />
-        <Route path="/chat/" element={<Dashboard />} />
+        <Route exact path="/chat" element={<Dashboard />} />
         <Route path="/chat/user/:id/" element={<Dashboard />} />
         <Route
           path="/profile/:username/"

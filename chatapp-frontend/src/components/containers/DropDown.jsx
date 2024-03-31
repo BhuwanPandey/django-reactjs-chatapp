@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 
 function DropDown() {
-  const { user, token, baseUrl } = useContext(AuthContext);
+  const { baseUrl, user, token } = useContext(AuthContext);
   const newUrl = `${baseUrl}/auth/logout/`;
   // const navigate = useNavigate ();
 

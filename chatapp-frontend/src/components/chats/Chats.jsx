@@ -3,19 +3,19 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { InputContext } from "../../context/InputContext";
+import ChatUser from "./ChatUser";
 import { get_message } from "../../common/messages";
 
 function Chats() {
   const [chats, setChats] = useState([]);
-  const { baseUrl,token } = useContext(AuthContext);
-  const { dispatch } = useContext(ChatContext);
+  const { baseUrl, token, user } = useContext(AuthContext);
   const { refresh } = useContext(InputContext);
-  const [selectDiv,setselectDiv] = useState(null);
+  const { onlineUsers: onlineuser,dispatch,divSelected } = useContext(ChatContext);
 
   useEffect(() => {
     const getChats = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/auth/chats/`, {
+        const res = await axios.get(`${baseUrl}/api/chats/`, {
           headers: {
             Authorization: `Token ${token.key}`,
           },
@@ -31,10 +31,14 @@ function Chats() {
     token.key && getChats();
   }, [token, refresh]);
 
+  
   const handleSelect = (u) => {
+    dispatch({
+      type: "SELECT_DIV",
+      divSelected:{name:u.display_name},
+    });
     const get_messages = async () => {
-      setselectDiv(u.display_name);
-      const chatUrl = `${baseUrl}/auth/chats/${u.chat_id}/messagecollection/`;
+      const chatUrl = `${baseUrl}/api/chats/${u.chat_id}/messagecollection/`;
       const res = await get_message(chatUrl, token.key);
       if (res.status === 200) {
         dispatch({
@@ -48,27 +52,26 @@ function Chats() {
 
   return (
     <div className="chatChats">
-      {chats &&
-        chats.map((val, idx) => (
-          <div
-            className={`chatUser1 ${selectDiv === val.display_name ? 'selected' : ''}`}
-            key={idx}
-            onClick={(e) => handleSelect(val)}
-          >
-            <img
-              src={
-                val.chat_profile
-                  ? baseUrl + val.chat_profile
-                  : `https://i.pravatar.cc/300?img=${val.display_name[0].length}`
-              }
-              alt={`${val.display_name[0]}_img`}
+      {user &&
+        chats.map((val, idx) =>
+          onlineuser ? (
+            <ChatUser
+              key={idx}
+              data={{ chat: val, url: baseUrl, token: token, user: user }}
+              online={onlineuser.includes(val.display_name.toLowerCase())}
+              select = {handleSelect}
+              selectDiv = {divSelected}
             />
-            <div className="chatuserInfo">
-              <span>{val.display_name}</span>
-              <p>{val.last_message}</p>
-            </div>
-          </div>
-        ))}
+          ) : (
+            <ChatUser
+              key={idx}
+              data={{ chat: val, url: baseUrl, token: token, user: user }}
+              online={false}
+              select = {handleSelect}
+              selectDiv = {divSelected}
+            />
+          )
+        )}
     </div>
   );
 }

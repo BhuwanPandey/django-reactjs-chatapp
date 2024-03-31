@@ -3,11 +3,10 @@ import { ChatContext } from "../../context/ChatContext";
 import Message from "./Message";
 
 function Messages() {
-  const { data, messages } = useContext(ChatContext);
-
+  const { chat_record, messages } = useContext(ChatContext);
   return (
     <div className="chatMessages">
-      {data.chat_id ? (
+      {chat_record.chat_id ? (
         messages.map((m, idx) => <Message message={m} key={idx} />)
       ) : (
         <div className="chatWelcomeMessage">
@@ -16,7 +15,6 @@ function Messages() {
           </p>
         </div>
       )}
-   
     </div>
   );
 }
