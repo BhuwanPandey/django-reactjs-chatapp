@@ -1,0 +1,52 @@
+version: "3.9"
+name: "chatapp"
+
+services:
+  backend:
+    container_name: chatapp-backend
+    image: be_chatapp-image
+    build: ../.
+    command:  sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports: 
+      - "8000:8000"
+    volumes:
+      - ..:/code
+    depends_on:
+      - chat-redis
+    networks:
+      - chat-net
+    environment:
+    - REDIS_HOST=chat-redis
+    - FRONT_API_1=http://localhost:3000
+    - FRONT_API_2=http://127.0.0.1:3000
+
+  frontend:
+    container_name: chatapp-frontend
+    image: fe_chatapp-image
+    depends_on: 
+      - backend
+    build: ../chatapp-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../chatapp-frontend:/code
+    networks:
+      - chat-net
+    environment:
+    - REACT_APP_BACKEND_API=http://127.0.0.1:8000
+    - REACT_APP_CHAT_API=ws://127.0.0.1:8000
+
+  chat-redis:
+    container_name: chatapp-redis
+    image: redis:6.2-alpine
+    hostname: redis
+    command:
+      - 'redis-server'
+    ports:
+      - 6379:6379
+    networks:
+      - chat-net
+
+networks:
+  chat-net:
+    driver: bridge
