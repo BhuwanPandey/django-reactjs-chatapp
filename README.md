@@ -16,7 +16,7 @@ Tech Stack:
 - :snake: Python 3.11 
 - :notebook_with_decorative_cover: Sqlite
 - :dart: Redis for caching
-- :zap: Socket.IO for chat and online status
+- :zap: Django Channels for chat and online status
 - :key:  Token Base Authentication
 - :whale: Docker + docker-compose to ease deployment and development  
 
