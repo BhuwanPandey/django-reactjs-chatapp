@@ -60,3 +60,11 @@ REACT_APP_CHAT_API=
 npm start
 visit at localhost:3000
 ```
+
+### Note 
+This product isnot eligible for Production use, Here are the reason
+  - It used sqlite as database 
+  - It didnot include testcases
+  - Still there are lot of validation Required
+  - Website isnot fully responsive
+
